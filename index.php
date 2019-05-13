@@ -192,6 +192,8 @@ Accessed&nbsp;<span id='date_accessed'></span>.</div>";
 --><span id='title'></span>.&nbsp;<!--can't insert extra space here
 -->Accessed&nbsp;<span id='month_accessed_short'></span>&nbsp;<span id='day_accessed'></span>,&nbsp;<span id='year_accessed'></span>,&nbsp;<!--can't insert extra space here
 -->from&nbsp;<span id='url_data'></span></div>";
+} else {
+	echo "<strong>Invalid citation format requested.</strong>";
 }
 } else{
 	echo "<button class='submit_button' onclick='document.cookie = \"citationtype=mla8\"; location.replace(\"?format=mla8\");'>MLA 8</button>";
