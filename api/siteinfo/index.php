@@ -189,7 +189,7 @@ if (!$author){
 $data_array['author'] = $author;
 //should also return last and first names (and middle initial)
 $author_array = preg_split("/ /", $author);
-if (sizeof($author_array == 2)){
+if (sizeof($author_array) == 2){
 	$author_first = $author_array[0];
 	$author_last = $author_array[1];
 } elseif (sizeof($author_array == 3)){
