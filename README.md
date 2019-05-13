@@ -1,4 +1,4 @@
-#CiteIt - Free Libre citation creator
+# CiteIt - Free Libre citation creator
 
 I created this project due to all existing citation creators (EasyBib, BibMe, Citation Machine, etc) being bought by Chegg and filled with ads.  This project will not be bought by Chegg and it will never run ads.
 
