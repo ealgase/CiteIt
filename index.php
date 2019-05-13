@@ -160,38 +160,11 @@ if(!in_array($format, $formats)){
 ";
 }
 if ($format=='mla8'){
-	echo "
-<!--only show this after step 2-->
-<div id='finalcitation' style='display:none;'><strong>MLA8 Citation:</strong>
-<!--<span id='author_name'></span>.&nbsp;&quot;-->
-<span id='author_last'></span>,&nbsp;<span id='author_first'></span>.&nbsp;&quot;<!--can't insert extra space here
---><span id='title'></span>.&quot;&nbsp;<!--can't insert extra space here
---><em><span id='site_title'></span></em>,&nbsp;<!--can't insert extra space here
---><span id='publisher'></span>,&nbsp;<!--can't insert extra space here
---><span id='date_published'></span>.&nbsp;<!--can't insert extra space here
---><span id='url_data'></span>.
-Accessed&nbsp;<span id='date_accessed'></span>.</div>";
+include('templates/mla8.php');
 } elseif ($format=='mla7'){
-	echo "
-<!--only show this after step 2-->
-<div id='finalcitation' style='display:none;'><strong>MLA7 Citation:</strong>
-<!--<span id='author_name'></span>.&nbsp;&quot;-->
-<span id='author_last'></span>,&nbsp;<span id='author_first'></span>.&nbsp;&quot;<!--can't insert extra space here
---><span id='title'></span>.&quot;&nbsp;<!--can't insert extra space here
---><em><span id='site_title'></span></em>,&nbsp;<!--can't insert extra space here
---><span id='publisher'></span>,&nbsp;<!--can't insert extra space here
---><span id='date_published'></span>.&nbsp;<!--can't insert extra space here
--->Web.&nbsp;<span id='date_accessed'></span>&nbsp;<span id='url_data'></span>.</div>";
+include('templates/mla7.php');
 } elseif ($format=='apa'){
-	echo "
-<!--only show this after step 2-->
-<div id='finalcitation' style='display:none;'><strong>APA Citation:</strong>
-<!--<span id='author_name'></span>.&nbsp;&quot;-->
-<span id='author_last'></span>,&nbsp;<span id='author_first_initial'><!--should only be first INITIAL, will implement later--></span>.&nbsp;(<!--dont insert space here
---><span id='year'></span>,&nbsp;<span id='month_long'></span>&nbsp;<span id='day'></span>).&nbsp;<!--can't insert extra space here
---><span id='title'></span>.&nbsp;<!--can't insert extra space here
--->Accessed&nbsp;<span id='month_accessed_short'></span>&nbsp;<span id='day_accessed'></span>,&nbsp;<span id='year_accessed'></span>,&nbsp;<!--can't insert extra space here
--->from&nbsp;<span id='url_data'></span></div>";
+include('templates/apa.php');
 } else {
 	echo "<strong>Invalid citation format requested.</strong>";
 }
