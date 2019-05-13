@@ -196,7 +196,7 @@ Accessed&nbsp;<span id='date_accessed'></span>.</div>";
 } else{
 	echo "<button class='submit_button' onclick='document.cookie = \"citationtype=mla8\"; location.replace(\"?format=mla8\");'>MLA 8</button>";
 	echo "<button class='submit_button' onclick='document.cookie = \"citationtype=mla7\"; location.replace(\"?format=mla7\");'>MLA 7</button>";
-	echo "<button class='submit_button' onclick='document.cookie = \"citationtype=apa\"; location.reload(\"?format=apa\");'>APA</button>";
+	echo "<button class='submit_button' onclick='document.cookie = \"citationtype=apa\"; location.replace(\"?format=apa\");'>APA</button>";
 }
 ?>
 </div>
