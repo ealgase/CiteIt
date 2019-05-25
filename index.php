@@ -24,21 +24,29 @@ function fullinfo(){
 	console.log(urlToRequest);
 	var oReq = new XMLHttpRequest();
 	oReq.addEventListener('load', reqListener);
-	oReq.open('GET', apiurl + '?url=' + encodeURIComponent(urlToRequest), async=false);
+	oReq.open('GET', apiurl + '?url=' + encodeURIComponent(urlToRequest));
+	oReq.onload = function(e){
+		document.getElementById('step2_loading').style.display = 'none';
+		//document.getElementById('response').innerHTML = oReq.responseText;
+		var json_data_for_citation = JSON.parse(oReq.responseText);
+	//	document.getElementById('author_name').innerHTML = json_data_for_citation['author'];
+		document.getElementById('author_last_name_span').innerHTML = json_data_for_citation['author_last'];
+		document.getElementById('author_first_name_span').innerHTML = json_data_for_citation['author_first'];
+		document.getElementById('title_span').innerHTML = json_data_for_citation['title'];
+		document.getElementById('site_title_span').innerHTML = json_data_for_citation['sitename'];
+		document.getElementById('publisher_span').innerHTML = json_data_for_citation['publisher'];
+		document.getElementById('date_published_span').innerHTML = json_data_for_citation['date_published_pretty'];
+		document.getElementById('date_accessed_span').innerHTML = json_data_for_citation['date_accessed_pretty'];
+		document.getElementById('url_data').innerHTML = json_data_for_citation['url'];
+		document.getElementById('step2').style.display = 'block';
+	//	document.getElementById('').innerHTML = json_data_for_citation[''];
+	}
+	oReq.onerror = function(e){
+		document.getElementById('step2_loading').style.display = 'none';
+		document.getElementById('step2_error').style.display = 'block';
+	}
+	document.getElementById('step2_loading').style.display = 'block';
 	oReq.send();
-	//document.getElementById('response').innerHTML = oReq.responseText;
-	var json_data_for_citation = JSON.parse(oReq.responseText);
-//	document.getElementById('author_name').innerHTML = json_data_for_citation['author'];
-	document.getElementById('author_last_name_span').innerHTML = json_data_for_citation['author_last'];
-	document.getElementById('author_first_name_span').innerHTML = json_data_for_citation['author_first'];
-	document.getElementById('title_span').innerHTML = json_data_for_citation['title'];
-	document.getElementById('site_title_span').innerHTML = json_data_for_citation['sitename'];
-	document.getElementById('publisher_span').innerHTML = json_data_for_citation['publisher'];
-	document.getElementById('date_published_span').innerHTML = json_data_for_citation['date_published_pretty'];
-	document.getElementById('date_accessed_span').innerHTML = json_data_for_citation['date_accessed_pretty'];
-	document.getElementById('url_data').innerHTML = json_data_for_citation['url'];
-	document.getElementById('step2').style.display = 'block';
-//	document.getElementById('').innerHTML = json_data_for_citation[''];
 }
 function svie(element, value){ //svie = set value if exist
 	if (element == null) {
@@ -128,11 +136,11 @@ function finish(){
 }
 </script>
 <div contenteditable id='url'>";
-$url = 'https://www.theguardian.com/business/2019/may/03/us-jobs-report-april-unemployment-wages';
+/*$url = 'enter url here...';
 if(isset($_GET['url'])){
 	$url = $_GET['url'];
 }
-echo $url;
+echo $url;*/
 echo "</div><script>$('#url').keypress(function(e){if (e.which==13){fullinfo();}; return e.which != 13;}); $('.spantextarea').keypress(function(e){return e.which != 13;});</script>
 <br />
 <button class='submit_button' onclick='fullinfo();'>Cite It!</button>
@@ -147,6 +155,12 @@ if(!in_array($format, $formats)){
 	$format = 'invalid';
 } else{
 	echo "
+<div id='step2_loading' style='display:none'>
+Loading data (this may take a few seconds)
+</div>
+<div id='step2_error' style='display:none'>
+There was an error in fetching data from the API. Sorry about that!
+</div>
 <div id='step2' style='display:none;'>
 <div class='spantextareadiv'>Author First Name: <span class='spantextarea' contenteditable id='author_first_name_span'></span></div>
 <div class='spantextareadiv'>Author Last Name: <span class='spantextarea' contenteditable id='author_last_name_span'></span></div>

@@ -13,9 +13,9 @@ if ($_GET['format']=="xml"){
 }
 //END HEADERS
 
-//ini_set('display_errors', 1);
-//ini_set('display_startup_errors', 1);
-//error_reporting(E_ALL);
+/*ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);*/
 /*
 GET /api/siteinfo.php?site=URL&format=(XML|JSON)
 */
@@ -43,55 +43,32 @@ $dom = new DOMDocument;
 $dom->loadHTML($webpage_raw); //$html will be the contents of the webpage submitted
 $dom->preserveWhiteSpace = false;
 //END WEBPAGE CONTENT
-//metas and datas
-$metas = $dom->getElementsByTagName('meta');
-$datas = $dom->getElementsByTagName('data');
-$spans = $dom->getElementsByTagName('span');
-//GET META TAGS
-function get_from_meta_or_none($name){
-	global $metas;
-	//first try to get by meta name, then by property
-	for ($i = 0; $i < $metas->length; $i++){
-		$meta = $metas->item($i);
-		if ($meta->getAttribute('name') == $name){
-			return $meta->getAttribute('content');
-		} elseif ($meta->getAttribute('property') == $name){
-			$ret_val = $meta->getAttribute('content');
-		}
+//function GET FROM ELEMENT AND ATTRIBUTE OR NONE (that's a jumble of words)
+function gwpc($element, $attribute, $attribute_content, $content){
+//element = element to search
+//attribute = attribute to search
+//attribute_content = attribute content necessary to match
+//content = attribute to return (or if it's "False", return the content)
+global $dom;
+$elements = $dom->getElementsByTagName($element);
+for ($i = 0; $i < $elements->length; $i++){
+	$element_to_check = $elements->item($i);
+	if ($element_to_check->getAttribute($attribute) == $attribute_content){
+		$element_with_attribute = $i;
+		break;
 	}
-	if (isset($ret_val)){
-		return $ret_val;
+}
+if (!isset($element_with_attribute)){
+	return false;
+} else{
+	if ($content == false){
+		return $elements->item($element_with_attribute)->nodeValue;
 	} else {
-		return False;
+		return $elements->item($element_with_attribute)->getAttribute($content);
 	}
 }
-//END META TAGS
-//GET DATA TAGS
-function get_from_data_or_none($name){
-	global $datas;
-	//first try to get by meta name, then by property
-	for ($i = 0; $i < $datas->length; $i++){
-		$data = $datas->item($i);
-		if ($data->getAttribute('class') == $name){
-			return $data->getAttribute('value');
-		}
-	}
-	return False;
 }
-//END DATA TAGS
-//GET SPAN TAGS
-function get_from_span_or_none($name){
-	global $spans;
-	//first try to get by meta name, then by property
-	for ($i = 0; $i < $spans->length; $i++){
-		$span = $spans->item($i);
-		if ($span->getAttribute('class') == $name){
-			return $span->nodeValue;
-		}
-	}
-	return False;
-}
-//END SPAN TAGS
+
 $data_array = [];
 
 //GET TITLE
@@ -109,13 +86,20 @@ if (preg_match('/ - /', $page_title)){
 	//possible sitename
 	$possible_sitename_from_title = $title_step_1[count($title_step_1)-1];
 	unset($title_step_1[count($title_step_1)-1]); //remove sitename from title
-	$title = implode('', $title_step_1);
+	$title = '';
+	foreach ($title_step_1 as $title_chunk){
+		$title = $title.$title_chunk.' - ';
+	}
+	$title = substr($title, 0, -3);
 } elseif (preg_match('/ \| /', $page_title)) { // same as above with | but with a notable difference: if there are multiple pipes, only the content before the first one is used (as opposed to all the content before the last one)
 	$title_step_1 = preg_split('/ \| /', $page_title);
 	//possible sitename
 	$possible_sitename_from_title = $title_step_1[count($title_step_1)-1];
-	$title = $title_step_1[0];
-	//print_r($title_step_1);
+	$title = '';
+	foreach ($title_step_1 as $title_chunk){
+		$title = $title.$title_chunk.' | ';
+	}
+	$title = substr($title, 0, -3);
 } else {
 	$title = $page_title;
 }
@@ -126,7 +110,8 @@ $data_array['title'] = $title;
 //END TITLE
 //GET SITE NAME
 //check for og:site_name
-$sitename = get_from_meta_or_none("og:site_name");
+//$sitename = get_from_meta_or_none("og:site_name");
+$sitename = gwpc('meta', 'property', 'og:site_name', 'content');
 if (!$sitename){ //if the tag isn't there, returns False
 	//check for sitename in title
 	if (isset($possible_sitename_from_title)){
@@ -146,12 +131,13 @@ $data_array['publisher'] = $publisher;
 //END PUBLISHER
 
 //GET DATE PUBLISHED
-$date_published = get_from_meta_or_none("article:published"); //works on New York Times
+$date_published = gwpc('meta', 'property', 'article:published', 'content');
+//$date_published = get_from_meta_or_none("article:published"); //works on New York Times
 if (!$date_published){
-	$date_published = get_from_meta_or_none("article:published_time"); //from The Guardian
+	$date_published = gwpc('meta', 'property', 'article:published_time', 'content'); //from The Guardian
 }
 if (!$date_published){
-	$date_published = get_from_data_or_none("dt-published"); //from Mastodon
+	$date_published = gwpc('data', 'property', 'dt-published', 'value'); //from Mastodon
 }
 $data_array['date_published'] = $date_published;
 //also return a pretty formatted date, for easier use
@@ -173,18 +159,18 @@ $data_array['date_accessed_dict']['Y'] = date("Y");
 //END DATE ACCESSED
 //GET AUTHOR
 //oh boy, there's NO standards on this, so I'll just do what *probably* will work
-$author = get_from_meta_or_none("author"); //from The Guardian, do NOT use og:author as that is a link to the author (which isn't what's wanted here)
+$author = gwpc('meta', 'property', 'author', 'content'); //from The Guardian, do NOT use og:author as that is a link to the author (which isn't what's wanted here)
 if (!$author){
-	$author_byline = get_from_meta_or_none("byl");
+	$author_byline = gwpc('meta', 'property', 'byl', 'content');
 	$byline_without_by = substr($author_byline, 3);
 	$byline_split = preg_split('/and/', $byline_without_by);
 	$author = $byline_split[0];
 }
 if (!$author){
-	$author = get_from_span_or_none("attr-fullname"); //twitter
+	$author =gwpc('span', 'class', 'attr-fullname', false); //twitter
 }
 if (!$author){
-	$author = get_from_span_or_none("display-name__account"); //mastodon
+	$author = gwpc('span', 'class', 'display-name__account', false); //mastodon
 }
 $data_array['author'] = $author;
 //should also return last and first names (and middle initial)
