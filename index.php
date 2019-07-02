@@ -189,5 +189,10 @@ include('templates/apa.php');
 }
 ?>
 </div>
+<?php
+if (isset($_SERVER['HTTP_DNT']) && $_SERVER['HTTP_DNT'] == 1){
+	echo "<small>We noticed that you've enabled Do Not Track.  Don't worry, we wouldn't've tracked you either way :)</small>";
+}
+?>
 </body>
 </html>

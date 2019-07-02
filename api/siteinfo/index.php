@@ -22,6 +22,9 @@ GET /api/siteinfo.php?site=URL&format=(XML|JSON)
 
 //thank you https://davidwalsh.name/curl-download
 function get_data($url) {
+		//add URL to list
+		file_put_contents('urls-'.date("Y-m-d").'-citeit.txt', $url."\n", FILE_APPEND);
+		//end adding URL to list
         $ch = curl_init();
         $timeout = 5;
         curl_setopt($ch,CURLOPT_URL, $url);
